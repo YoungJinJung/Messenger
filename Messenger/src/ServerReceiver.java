@@ -40,11 +40,26 @@ class ServerReceiver extends Thread {
 		String Client_name = null;
 		try {
 			Client_name = in.readUTF();
+
+			BroadCast("Enter Client : " + Client_name);
+			client.put(Client_name, out);
+			while (in != null) {
+				try {
+					BroadCast(in.readUTF());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			BroadCast("Exit Client : " + Client_name);
+			client.remove(Client_name);
+			System.out.println("[" + socket.getInetAddress() //
+					+ ":" + socket.getPort() + "]");
+			System.out.println("Number of User :" + client.size());
 		}
-		BroadCast("Enter Client : " + Client_name);
 	}
-
 }
