@@ -24,18 +24,19 @@ public class Server {
 
 			while (true) {
 				socket = serverSocket.accept();
+				System.out.println("Connect Sucess");
 				System.out.println("[" + socket.getInetAddress() //
 						+ ":" + socket.getPort() + "]" + "에서 접속하였습니다.");
 
 				// 서버에서 클라이언트로 메시지를 전송할 Thread 생성
-				ServerReceiver thread = new ServerReceiver(socket,client);
+				ServerReceiver thread = new ServerReceiver(socket, client);
 				thread.start();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				socket.close();
+				serverSocket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -47,5 +48,3 @@ public class Server {
 		new Server().start();
 	}
 }
-
-

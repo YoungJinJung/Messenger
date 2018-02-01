@@ -24,7 +24,7 @@ class ServerReceiver extends Thread {
 	void BroadCast(String msg) {
 		Iterator<String> it = client.keySet().iterator();
 
-		while (!it.hasNext()) {
+		while (it.hasNext()) {
 			String name = it.next();
 			DataOutputStream out = client.get(name);
 			try {
@@ -40,9 +40,9 @@ class ServerReceiver extends Thread {
 		String Client_name = null;
 		try {
 			Client_name = in.readUTF();
-
-			BroadCast("Enter Client : " + Client_name);
 			client.put(Client_name, out);
+			BroadCast("Enter Client : " + Client_name);
+			System.out.println("Number of User :" + client.size());
 			while (in != null) {
 				try {
 					BroadCast(in.readUTF());
