@@ -3,11 +3,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Sender extends Thread {
+public class SendProcess extends Thread {
 	Socket socket;
 	String c_name;
 
-	public Sender(Socket socket, String UserId) {
+	public SendProcess(Socket socket, String UserId) {
 		// TODO Auto-generated constructor stub
 		this.socket = socket;
 		this.c_name = UserId;
@@ -29,7 +29,6 @@ public class Sender extends Thread {
 			if (out != null) {
 				out.writeUTF(c_name);
 			}
-
 			while (out != null) {
 				// 키보드로 입력받은 데이터를 서버로 전송
 				out.writeUTF("[" + c_name + "]" + sc.nextLine());

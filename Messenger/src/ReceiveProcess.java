@@ -2,10 +2,10 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class Receiver extends Thread {
+public class ReceiveProcess extends Thread {
 	Socket socket;
 
-	public Receiver(Socket socket) {
+	public ReceiveProcess(Socket socket) {
 		// TODO Auto-generated constructor stub
 		this.socket = socket;
 	}

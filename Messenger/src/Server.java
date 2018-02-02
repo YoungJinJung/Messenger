@@ -25,11 +25,9 @@ public class Server {
 			while (true) {
 				socket = serverSocket.accept();
 				System.out.println("Connect Sucess");
-				System.out.println("[" + socket.getInetAddress() //
-						+ ":" + socket.getPort() + "]" + "에서 접속하였습니다.");
-
+				System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]" + "에서 접속하였습니다.");
 				// 서버에서 클라이언트로 메시지를 전송할 Thread 생성
-				ServerReceiver thread = new ServerReceiver(socket, client);
+				ServerProcess thread = new ServerProcess(socket, client);
 				thread.start();
 			}
 		} catch (Exception e) {
@@ -42,7 +40,7 @@ public class Server {
 				e.printStackTrace();
 			}
 		}
-	} // start()
+	}
 
 	public static void main(String[] args) {
 		new Server().start();

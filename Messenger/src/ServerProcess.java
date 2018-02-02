@@ -5,13 +5,13 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.Map;
 
-class ServerReceiver extends Thread {
+class ServerProcess extends Thread {
 	Socket socket;
 	DataInputStream in;
 	DataOutputStream out;
 	Map<String, DataOutputStream> client;
 
-	ServerReceiver(Socket socket, Map<String, DataOutputStream> client) {
+	ServerProcess(Socket socket, Map<String, DataOutputStream> client) {
 		this.socket = socket;
 		this.client = client;
 		try {
