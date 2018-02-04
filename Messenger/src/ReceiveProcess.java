@@ -4,12 +4,11 @@ import java.net.Socket;
 
 public class ReceiveProcess extends Thread {
 	Socket socket;
-	DataInputStream in;
-	
+	DataInputStream in = null;
+
 	ReceiveProcess(Socket socket) {
 		// TODO Auto-generated constructor stub
 		this.socket = socket;
-		this.in= null;
 	}
 
 	public void run() {

@@ -9,22 +9,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
+	ServerSocket serverSocket= null;
+	Socket socket= null;
 	ConcurrentHashMap<String, DataOutputStream> client_msg;
-	ServerSocket serverSocket;
-	Socket socket;
 	int port;
 
 	Server() {
-		this.serverSocket = null;
-		this.socket = null;
 		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
 		this.port = 7777;
 	}
 
 	Server(String str) {
 		// TODO Auto-generated constructor stub
-		this.serverSocket = null;
-		this.socket = null;
 		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
 		this.port = Integer.parseInt(str);
 
