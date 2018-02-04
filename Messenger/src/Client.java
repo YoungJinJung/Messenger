@@ -1,6 +1,6 @@
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client {
 
@@ -12,7 +12,7 @@ public class Client {
 		}
 		String serverIp = "127.0.0.1";
 		// int port = 7777;
-		String UserId = "Guest1"; // User마다 Id를 다르게 해야됨.
+		String UserId = "Guest2"; // User마다 Id를 다르게 해야됨.
 		// String serverIp = arg[0];
 		// int port = Integer.parseInt(arg[1]);
 		// String UserId = arg[2];
@@ -26,12 +26,10 @@ public class Client {
 			sender.start();
 			receiver.start();
 
-		} catch (UnknownHostException e) {
+		} catch (ConnectException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 }

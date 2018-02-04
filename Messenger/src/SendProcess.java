@@ -20,7 +20,6 @@ public class SendProcess extends Thread {
 			out = new DataOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 		Scanner sc = new Scanner(System.in);
@@ -34,7 +33,14 @@ public class SendProcess extends Thread {
 				out.writeUTF("[" + c_name + "]" + sc.nextLine());
 			}
 		} catch (IOException e) {
+		} finally {
+			try {
+				out.close();
+				sc.close();
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			}
 		}
-
 	}
 }

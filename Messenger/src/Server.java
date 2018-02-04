@@ -6,12 +6,13 @@ import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-	Map<String, DataOutputStream> client;
+	ConcurrentHashMap<String, DataOutputStream> client;
 
 	Server() {
-		client = Collections.synchronizedMap(new HashMap<String, DataOutputStream>());
+		client = new ConcurrentHashMap<String, DataOutputStream>();
 	}
 
 	public void start() {
@@ -34,6 +35,7 @@ public class Server {
 			e.printStackTrace();
 		} finally {
 			try {
+				socket.close();
 				serverSocket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

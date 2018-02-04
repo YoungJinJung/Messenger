@@ -14,13 +14,21 @@ public class ReceiveProcess extends Thread {
 		DataInputStream in = null;
 		try {
 			in = new DataInputStream(socket.getInputStream());
+			while (in != null) {
+				try {
+					System.out.println(in.readUTF());
+				} catch (IOException e) {
+				}
+			}
 		} catch (IOException e) {
-		}
-		while (in != null) {
+		} finally {
 			try {
-				System.out.println(in.readUTF());
+				in.close();
+				socket.close();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 			}
 		}
+
 	}
 }

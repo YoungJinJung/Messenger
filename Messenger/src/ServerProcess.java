@@ -31,7 +31,6 @@ class ServerProcess extends Thread {
 				out.writeUTF(msg);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -44,16 +43,12 @@ class ServerProcess extends Thread {
 			BroadCast("Enter Client : " + Client_name);
 			System.out.println("Number of User :" + client.size());
 			while (in != null) {
-				try {
+			
 					BroadCast(in.readUTF());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} finally {
 			BroadCast("Exit Client : " + Client_name);
 			client.remove(Client_name);
