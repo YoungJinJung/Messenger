@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 class ServerProcess extends Thread {
 	Socket socket;
 	DataInputStream in;
 	DataOutputStream out;
-	Map<String, DataOutputStream> client;
+	ConcurrentHashMap<String, DataOutputStream> client;
 
-	ServerProcess(Socket socket, Map<String, DataOutputStream> client) {
+	ServerProcess(Socket socket, ConcurrentHashMap<String, DataOutputStream> client) {
 		this.socket = socket;
 		this.client = client;
 		try {
@@ -38,14 +39,12 @@ class ServerProcess extends Thread {
 	public void run() {
 		String Client_name = null;
 		try {
-			Client_name = in.readUTF();
+			Client_name = in.readUTF();//first received user name
 			client.put(Client_name, out);
 			BroadCast("Enter Client : " + Client_name);
 			System.out.println("Number of User :" + client.size());
 			while (in != null) {
-			
 					BroadCast(in.readUTF());
-				
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

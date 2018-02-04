@@ -9,27 +9,39 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-	ConcurrentHashMap<String, DataOutputStream> client;
+	ConcurrentHashMap<String, DataOutputStream> client_msg;
+	ServerSocket serverSocket;
+	Socket socket;
+	int port;
 
 	Server() {
-		client = new ConcurrentHashMap<String, DataOutputStream>();
+		this.serverSocket = null;
+		this.socket = null;
+		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
+		this.port = 7777;
+	}
+
+	Server(String str) {
+		// TODO Auto-generated constructor stub
+		this.serverSocket = null;
+		this.socket = null;
+		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
+		this.port = Integer.parseInt(str);
+
 	}
 
 	public void start() {
-		ServerSocket serverSocket = null;
-		Socket socket = null;
-
 		try {
-			serverSocket = new ServerSocket(7777);
+			this.serverSocket = new ServerSocket(this.port);
 			System.out.println("Server Start");
 
 			while (true) {
-				socket = serverSocket.accept();
+				this.socket = this.serverSocket.accept();
 				System.out.println("Connect Sucess");
-				System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]" + "에서 접속하였습니다.");
-				// 서버에서 클라이언트로 메시지를 전송할 Thread 생성
-				ServerProcess thread = new ServerProcess(socket, client);
-				thread.start();
+				System.out.println(
+						"[" + this.socket.getInetAddress() + ":" + this.socket.getPort() + "]" + "is entered Server.");
+				ServerProcess sp = new ServerProcess(this.socket, this.client_msg);
+				sp.start();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -45,6 +57,12 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		new Server().start();
+		if (args.length == 0) {
+			Server s = new Server();
+			s.start();
+		} else {
+			Server s = new Server(args[0]);
+			s.start();
+		}
 	}
 }

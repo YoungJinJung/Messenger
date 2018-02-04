@@ -6,37 +6,31 @@ import java.util.Scanner;
 public class SendProcess extends Thread {
 	Socket socket;
 	String c_name;
+	DataOutputStream out;
 
-	public SendProcess(Socket socket, String UserId) {
+	SendProcess(Socket socket, String UserId) {
 		// TODO Auto-generated constructor stub
 		this.socket = socket;
 		this.c_name = UserId;
+		this.out = null;
 	}
 
 	public void run() {
-		DataOutputStream out = null;
-
-		try {
-			out = new DataOutputStream(socket.getOutputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-		}
-
 		Scanner sc = new Scanner(System.in);
 		try {
-			// 시작하자 마자, 자신의 대화명을 서버로 전송
-			if (out != null) {
+			out = new DataOutputStream(socket.getOutputStream());
+			if (out != null) {//first, user name send server
 				out.writeUTF(c_name);
 			}
 			while (out != null) {
-				// 키보드로 입력받은 데이터를 서버로 전송
+				//input data send server
 				out.writeUTF("[" + c_name + "]" + sc.nextLine());
 			}
-		} catch (IOException e) {
+		} catch (IOException e1) {
 		} finally {
 			try {
-				out.close();
 				sc.close();
+				out.close();
 				socket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

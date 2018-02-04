@@ -4,14 +4,15 @@ import java.net.Socket;
 
 public class ReceiveProcess extends Thread {
 	Socket socket;
-
-	public ReceiveProcess(Socket socket) {
+	DataInputStream in;
+	
+	ReceiveProcess(Socket socket) {
 		// TODO Auto-generated constructor stub
 		this.socket = socket;
+		this.in= null;
 	}
 
 	public void run() {
-		DataInputStream in = null;
 		try {
 			in = new DataInputStream(socket.getInputStream());
 			while (in != null) {
@@ -29,6 +30,5 @@ public class ReceiveProcess extends Thread {
 				// TODO Auto-generated catch block
 			}
 		}
-
 	}
 }
