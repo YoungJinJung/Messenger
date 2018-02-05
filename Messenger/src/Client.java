@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Random;
@@ -14,7 +13,7 @@ public class Client {
 	Client() {// Clinet의 인자가 없을 때 Default 생성자
 		this.serverIp = "127.0.0.1";
 		this.port = 7777;
-		this.UserId = "Guest" + new Random().nextInt();
+		this.UserId = "Guest" + new Random().nextInt(1000);
 	}
 
 	Client(String[] info) {// 포트/ip/id를 다 입력했을 때

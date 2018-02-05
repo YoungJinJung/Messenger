@@ -3,16 +3,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-	ServerSocket serverSocket= null;
-	Socket socket= null;
+	ServerSocket serverSocket = null;
+	Socket socket = null;
 	ConcurrentHashMap<String, DataOutputStream> client_msg;
 	int port;
+	int threadPoolSize = 16;
 
 	Server() {
 		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
@@ -27,29 +25,35 @@ public class Server {
 	}
 
 	public void start() {
-		try {
-			this.serverSocket = new ServerSocket(this.port);
-			System.out.println("Server Start");
-
-			while (true) {
-				this.socket = this.serverSocket.accept();
-				System.out.println("Connect Sucess");
-				System.out.println(
-						"[" + this.socket.getInetAddress() + ":" + this.socket.getPort() + "]" + "is entered Server.");
-				ServerProcess sp = new ServerProcess(this.socket, this.client_msg);
-				sp.start();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				socket.close();
-				serverSocket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		Thread thread = null;
+		for (int i = 0; i < threadPoolSize; i++)
+			thread = new Thread() {
+				public void run() {
+					try {
+						serverSocket = new ServerSocket(port);
+						System.out.println("Server Start");
+						while (true) {
+							socket = serverSocket.accept();
+							System.out.println("Connect Sucess");
+							System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]"
+									+ "is entered Server.");
+							ServerProcess sp = new ServerProcess(socket, client_msg);
+							sp.start();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							socket.close();
+							serverSocket.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			};
+		thread.start();
 	}
 
 	public static void main(String[] args) {
