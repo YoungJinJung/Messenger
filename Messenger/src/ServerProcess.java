@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 class ServerProcess extends Thread {
@@ -18,17 +19,15 @@ class ServerProcess extends Thread {
 	}
 
 	void BroadCast(String msg) {
-		Iterator<String> it = client_msg.keySet().iterator();
 
-		while (it.hasNext()) {
-			String name = it.next();
-			DataOutputStream out = client_msg.get(name);
+		for (Map.Entry<String, DataOutputStream> Entry : client_msg.entrySet()) {
 			try {
-				out.writeUTF(msg);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				Entry.getValue().writeUTF(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+
 	}
 
 	public void run() {

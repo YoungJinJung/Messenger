@@ -10,7 +10,7 @@ public class Server {
 	Socket socket = null;
 	ConcurrentHashMap<String, DataOutputStream> client_msg;
 	int port;
-	int threadPoolSize = 16;
+	// int threadPoolSize = 3;
 
 	Server() {
 		this.client_msg = new ConcurrentHashMap<String, DataOutputStream>();
@@ -25,35 +25,28 @@ public class Server {
 	}
 
 	public void start() {
-		Thread thread = null;
-		for (int i = 0; i < threadPoolSize; i++)
-			thread = new Thread() {
-				public void run() {
-					try {
-						serverSocket = new ServerSocket(port);
-						System.out.println("Server Start");
-						while (true) {
-							socket = serverSocket.accept();
-							System.out.println("Connect Sucess");
-							System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]"
-									+ "is entered Server.");
-							ServerProcess sp = new ServerProcess(socket, client_msg);
-							sp.start();
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					} finally {
-						try {
-							socket.close();
-							serverSocket.close();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-			};
-		thread.start();
+
+		try {
+			serverSocket = new ServerSocket(port);
+			System.out.println("Server Start");
+			while (true) {
+				socket = serverSocket.accept();
+				System.out.println("Connect Sucess");
+				System.out.println("[" + socket.getInetAddress() + ":" + socket.getPort() + "]" + "is entered Server.");
+				ServerProcess sp = new ServerProcess(socket, client_msg);
+				sp.start();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				socket.close();
+				serverSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void main(String[] args) {
