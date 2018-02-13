@@ -1,30 +1,34 @@
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 
 public class ReceiveProcess extends Thread {
-	Socket socket;
-	DataInputStream in = null;
+	SocketChannel socket;
 
-	ReceiveProcess(Socket socket) {
+	ReceiveProcess(SocketChannel socket2) {
 		// TODO Auto-generated constructor stub
-		this.socket = socket;
+		this.socket = socket2;
 	}
 
 	public void run() {
 		try {
-			in = new DataInputStream(socket.getInputStream());
-			while (in != null) {
-				try {
-					System.out.println(in.readUTF());
-				} catch (IOException e) {
+			while (socket != null) {
+				ByteBuffer byteBuffer = ByteBuffer.allocate(100);
+				int byteCount = this.socket.read(byteBuffer);
+				if (byteCount == -1) {
+					throw new IOException();
 				}
+				byteBuffer.flip();
+				Charset charset = Charset.forName("UTF-8");
+				String data = charset.decode(byteBuffer).toString();
+				System.out.println(data);
 			}
 		} catch (IOException e) {
 		} finally {
 			try {
-				in.close();
-				socket.close();
+				this.socket.close();
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 			}

@@ -1,11 +1,12 @@
 import java.io.IOException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.nio.channels.SocketChannel;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Client {
-	Socket socket = null;
+	SocketChannel socket = null;
 	String serverIp;
 	String UserId;
 	int port;
@@ -31,7 +32,9 @@ public class Client {
 
 	public void start() {// 서버의 ip와 port로 소켓 연결
 		try {
-			socket = new Socket(serverIp, port);
+			socket = SocketChannel.open();
+			socket.configureBlocking(true);
+			socket.connect(new InetSocketAddress(serverIp, port));
 			System.out.println("Connect Sucess");
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -46,15 +49,15 @@ public class Client {
 		// TODO Auto-generated method stub
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Input ServerIp, Serverport, UserID");
+		System.out.println("If you don't input Server Ip and port, then Default Server is local and port is 7777");
 		String[] ServerInfo = new String[3];
 
 		for (int i = 0; i < 3; i++)
 			ServerInfo[i] = sc.nextLine();
-		if (ServerInfo[0].equals("localhost") || ServerInfo[0].equals("Localhost"))
-			ServerInfo[0] = "127.0.0.1";
+	
 
 		if (ServerInfo[0].equals("")) {
-			System.out.println("If you don't input Server Ip and port, then Default Server is local and port is 7777");
+
 			if (ServerInfo[2].equals("")) {
 				Client c = new Client();
 				c.start();
