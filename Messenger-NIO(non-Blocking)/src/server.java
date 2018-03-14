@@ -24,10 +24,10 @@ public class server {
 
 	server() {
 		try {
-			// Logger ¼³Á¤ - ÇöÀç½Ã°£À» ms·Î ÇÏ¿©, ÆÄÀÏ »ý¼º
+			// Logger ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ï¿½ï¿½ msï¿½ï¿½ ï¿½Ï¿ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			logger = Logger.getLogger(server.class.getName());
 			long time = System.currentTimeMillis();
-			fileHandler = new FileHandler(String.valueOf(time) + ".log");// ÆÄÀÏÀúÀå
+			fileHandler = new FileHandler(String.valueOf(time) + ".log");// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			logger.addHandler(fileHandler);
 
 			clientMsg = new ConcurrentHashMap<>();
@@ -73,7 +73,7 @@ public class server {
 				}
 				buffer.flip();
 				String data = charSet.decode(buffer).toString();
-				if (data.startsWith("Enter UserID : ")) {// Ã³À½ µé¾î¿Â °æ¿ì
+				if (data.startsWith("Enter UserID : ")) {// Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 					String str[] = data.split(":");
 					str[1] = str[1].trim();
 					clientMsg.put(str[1], sc);
@@ -81,7 +81,7 @@ public class server {
 					logger.info("SERVER I LOG: NUMBER OF USER - " + clientMsg.size());
 					logger.info("----------------------DELIMETER---------------------");
 					broadCastToUser(data);
-				} else if (data.endsWith("EXIT") || data.endsWith("exit")) {// ¸í½ÃÀû Á¾·á »óÈ²
+				} else if (data.endsWith("EXIT") || data.endsWith("exit")) {// ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È²
 					String str[] = data.split(" ");
 					String msg = str[0].substring(1, str[0].length() - 1);
 					msg = "Exit User ID : " + str[0].substring(1, str[0].length() - 1);
@@ -122,7 +122,7 @@ public class server {
 					if (key.isAcceptable()) {
 						acceptClient(key);
 					}
-					if (key.isReadable()) {
+					else if (key.isReadable()) {
 						readMessage(key);
 					}
 				}
