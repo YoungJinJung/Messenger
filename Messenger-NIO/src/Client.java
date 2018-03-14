@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Client {
 	SocketChannel socket = null;
@@ -54,13 +55,13 @@ public class Client {
 
 		for (int i = 0; i < 3; i++)
 			ServerInfo[i] = sc.nextLine();
-	
 
 		if (ServerInfo[0].equals("")) {
 
 			if (ServerInfo[2].equals("")) {
 				Client c = new Client();
 				c.start();
+
 				SendProcess sender = new SendProcess(c.socket, c.UserId);
 				ReceiveProcess receiver = new ReceiveProcess(c.socket);
 				sender.start();
@@ -68,6 +69,7 @@ public class Client {
 			} else {
 				Client c = new Client(ServerInfo);
 				c.start();
+
 				SendProcess sender = new SendProcess(c.socket, c.UserId);
 				ReceiveProcess receiver = new ReceiveProcess(c.socket);
 				sender.start();

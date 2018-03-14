@@ -29,8 +29,14 @@ public class SendProcess extends Thread {
 			}
 			while (this.socket != null) {
 				Charset charset = Charset.forName("UTF-8");
-				ByteBuffer byteBuffer = charset.encode("[" + this.c_name + "]" + sc.nextLine());
-				this.socket.write(byteBuffer);
+				String msg = sc.nextLine();
+				if (msg.equals("Exit") || msg.equals("exit")) {
+					ByteBuffer byteBuffer = charset.encode(msg);
+					this.socket.write(byteBuffer);
+				} else {
+					ByteBuffer byteBuffer = charset.encode("[" + this.c_name + "]" + msg);
+					this.socket.write(byteBuffer);
+				}
 			}
 		} catch (IOException e1) {
 		} finally {
