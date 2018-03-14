@@ -13,27 +13,30 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class server {
-	private ByteBuffer buffer = ByteBuffer.allocate(1024);
+	private final ByteBuffer buffer = ByteBuffer.allocate(8192);
 	private ConcurrentHashMap<String, SocketChannel> clientMsg;
 	private ServerSocketChannel serverSocket = null;
 	private Selector selector = null;
-	private Charset charSet = Charset.forName("UTF-8");
+	private final Charset charSet = Charset.forName("UTF-8");
 	private SocketChannel sc = null;
-	private FileHandler fileHandler;
-	private Logger logger;
+	private FileHandler fileHandler = null;
+	private Logger logger = null;
 
 	server() {
 		try {
+			// Logger 설정 - 현재시간을 ms로 하여, 파일 생성
 			logger = Logger.getLogger(server.class.getName());
 			long time = System.currentTimeMillis();
 			fileHandler = new FileHandler(String.valueOf(time) + ".log");// 파일저장
 			logger.addHandler(fileHandler);
+
 			clientMsg = new ConcurrentHashMap<>();
 			serverSocket = ServerSocketChannel.open();
 			serverSocket.configureBlocking(false);
 			serverSocket.bind(new InetSocketAddress(7777));
 			selector = Selector.open();
 			serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+
 		} catch (Exception exc) {
 			System.out.println("SERVER I LOG: EXIT");
 			exc.printStackTrace();
@@ -42,7 +45,7 @@ public class server {
 		logger.info("SERVER I LOG: SERVER START\nPORT NUMBER : 7777(DEFAULT)");
 	}
 
-	private void accept(SelectionKey key) throws IOException {
+	private void acceptClient(SelectionKey key) throws IOException {
 
 		sc = serverSocket.accept();
 
@@ -51,46 +54,51 @@ public class server {
 		} else {
 			logger.info("SERVER I LOG : CONNECT FALIED");
 		}
+
 		sc.configureBlocking(false);
 		sc.register(selector, SelectionKey.OP_READ);
 	}
 
-	private void read(SelectionKey key) {
+	private void readMessage(SelectionKey key) {
 		SocketChannel cc = (SocketChannel) key.channel();
 		if (!cc.isOpen()) {
 			return;
 		}
-		StringBuilder request = new StringBuilder();
 		try {
 			buffer.clear();
 			while (cc.read(buffer) > 0) {
+				int byteCount = cc.read(buffer);
+				if (byteCount == -1) {
+					throw new IOException();
+				}
 				buffer.flip();
-				request.append(new String(buffer.array(), buffer.position(), buffer.limit(), "UTF-8"));
-				buffer.clear();
+				String data = charSet.decode(buffer).toString();
+				if (data.startsWith("Enter UserID : ")) {// 처음 들어온 경우
+					String str[] = data.split(":");
+					str[1] = str[1].trim();
+					clientMsg.put(str[1], sc);
+					logger.info("SERVER I LOG: Enter UserID - " + str[1]);
+					logger.info("SERVER I LOG: NUMBER OF USER - " + clientMsg.size());
+					logger.info("----------------------DELIMETER---------------------");
+					broadCastToUser(data);
+				} else if (data.endsWith("EXIT") || data.endsWith("exit")) {// 명시적 종료 상황
+					String str[] = data.split(" ");
+					String msg = str[0].substring(1, str[0].length() - 1);
+					msg = "Exit User ID : " + str[0].substring(1, str[0].length() - 1);
+					broadCastToUser(msg);
+					clientMsg.remove(str[0].substring(1, str[0].length() - 1));
+					logger.info("SERVER I LOG: " + msg);
+					logger.info("SERVER I LOG: NUMBER OF USER - " + clientMsg.size());
+					logger.info("----------------------DELIMETER---------------------");
+				} else
+					broadCastToUser(data);
 			}
-			if (request.toString().startsWith("Enter UserID : ")) {
-				String str[] = request.toString().split(":");
-				str[1] = str[1].trim();
-				clientMsg.put(str[1], sc);
-				logger.info("SERVER I LOG: Enter UserID - " + str[1]);
-				logger.info("SERVER I LOG: NUMBER OF USER - " + clientMsg.size());
-				logger.info("----------------------DELIMETER---------------------");
-			}
-			write(request.toString());
 		} catch (Exception exc) {
-			// logger.severe("SERVER E LOG: " + exc.getMessage());
-			try {
-				cc.close();
-				cc.socket().close();
-				logger.info("SERVER I LOG: SOCKET CLOSED");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			logger.severe("SERVER E LOG: " + exc.getMessage());
 		}
 	}
 
-	private void write(String massage) {
+	private void broadCastToUser(String massage) {
 		for (Map.Entry<String, SocketChannel> Entry : clientMsg.entrySet()) {
 			try {
 				ByteBuffer encodedMessage = charSet.encode(massage);
@@ -106,21 +114,22 @@ public class server {
 	}
 
 	public void run() {
-		while (true)
+		while (true) {
 			try {
 				selector.select();
 				for (Iterator<SelectionKey> i = selector.selectedKeys().iterator(); i.hasNext(); i.remove()) {
 					SelectionKey key = (SelectionKey) i.next();
 					if (key.isAcceptable()) {
-						accept(key);
+						acceptClient(key);
 					}
 					if (key.isReadable()) {
-						read(key);
+						readMessage(key);
 					}
 				}
 			} catch (Exception exc) {
-				exc.printStackTrace();
+				logger.info("SERVER SHUTDOWN");
 			}
+		}
 	}
 
 	public static void main(String[] args) {

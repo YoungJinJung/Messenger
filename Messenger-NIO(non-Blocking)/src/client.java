@@ -12,7 +12,7 @@ public class client {
 	private String userId;
 	private int port;
 	private boolean connectedToServer = false;
-	private Charset charSet = Charset.forName("UTF-8");
+	public static final Charset charSet = Charset.forName("UTF-8");
 
 	client() {// Clinet의 인자가 없을 때 Default 생성자
 		this.serverIp = "127.0.0.1";
@@ -55,8 +55,6 @@ public class client {
 			}
 			System.out.println("CLIENT LOG: Connected!");
 			connectedToServer = true;
-
-			// Create a new thread to listen to InputStream event
 			String reg = "Enter UserID : " + userId;
 			sendID(reg);
 		} catch (IOException exc) {
@@ -99,34 +97,59 @@ public class client {
 		System.out.println("USER ID : ");
 		serverInfo[2] = sc.nextLine();
 
+		client c;
 		if (serverInfo[0].equals("")) {
 
 			if (serverInfo[2].equals("")) {
-				client c = new client();
+				c = new client();
 				c.connect();
 
 				sendProcess sender = new sendProcess(c.socket, c.userId);
-				receiveProcess receiver = new receiveProcess(c.socket);
 				sender.start();
-				receiver.start();
 			} else {
-				client c = new client(serverInfo);
+				c = new client(serverInfo);
 				c.connect();
 
 				sendProcess sender = new sendProcess(c.socket, c.userId);
-				receiveProcess receiver = new receiveProcess(c.socket);
 				sender.start();
-				receiver.start();
 			}
 		} else {
-			client c = new client(serverInfo);
+			c = new client(serverInfo);
 			c.connect();
 
 			sendProcess sender = new sendProcess(c.socket, c.userId);
-			receiveProcess receiver = new receiveProcess(c.socket);
 			sender.start();
-			receiver.start();
+		}
 
+		ByteBuffer byteBuffer = ByteBuffer.allocate(100);
+		while (true) {
+			byteBuffer.clear();
+			try {
+				if (c.socket.read(byteBuffer) > 0) {
+					int byteCount = c.socket.read(byteBuffer);
+					if (byteCount == -1) {
+						throw new IOException();
+					}
+					byteBuffer.flip();
+
+					String data = charSet.decode(byteBuffer).toString();
+					System.out.println(data);
+					if (data.startsWith("Exit") && data.endsWith(c.userId)) {
+						break;
+					}
+
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			c.socket.close();
+			System.exit(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

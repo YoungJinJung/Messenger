@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class sendProcess extends Thread {
 	private SocketChannel socket;
 	private String clientName;
-	private Charset charSet = Charset.forName("UTF-8");
 
 	sendProcess(SocketChannel socket, String userId) {
 		// TODO Auto-generated constructor stub
@@ -19,7 +18,7 @@ public class sendProcess extends Thread {
 		Scanner sc = new Scanner(System.in);
 		try {
 			while (this.socket != null) {
-				ByteBuffer byteBuffer = charSet.encode("[" + this.clientName + "] " + sc.nextLine());
+				ByteBuffer byteBuffer = client.charSet.encode("[" + this.clientName + "] " + sc.nextLine());
 				this.socket.write(byteBuffer);
 			}
 		} catch (IOException e1) {
